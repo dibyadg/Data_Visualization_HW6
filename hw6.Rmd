@@ -1,0 +1,53 @@
+---
+title: "Homework 6 - House Prices"
+author: "Dibya Gyawali"
+---
+```{r}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+load("/Users/dibyagyawali/Desktop/Data Visualization Project/house_prices.rda")
+
+house_prices <- house_prices %>%
+  mutate(year = as.numeric(format(date, "%Y")))
+```
+
+## 2(a) House Price Index by State
+```{r}
+ggplot(house_prices, aes(x = year, y = house_price_index)) +
+  geom_line(color = "steelblue", linewidth = 0.7) +
+  facet_wrap(~ state, scales = "free_y") +
+  scale_x_continuous(breaks = c(1980, 2000, 2020), 
+                     labels = c("'80", "'00", "'20")) +
+  labs(title = "House Price Index Trends by State",
+       x = "Year", y = "House Price Index") +
+  theme_minimal()
+```
+
+## 2(b) Reshape Data
+```{r}
+house_reshaped <- house_prices %>%
+  gather(key = "measure", value = "value", 
+         house_price_index, unemploy_perc)
+head(house_reshaped)
+```
+
+## 2(c) Dual-Line Plot
+```{r}
+ggplot(house_reshaped, aes(x = year, y = value, color = measure)) +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ state, scales = "free_y") +
+  scale_x_continuous(breaks = c(1980, 2000, 2020), 
+                     labels = c("'80", "'00", "'20")) +
+  scale_color_manual(values = c("house_price_index" = "steelblue", 
+                                "unemploy_perc" = "coral"),
+                     labels = c("House Price Index", "Unemployment %")) +
+  labs(title = "House Price Index and Unemployment Rate by State") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+### Comment
+
+This graph is not ideal because house_price_index and unemploy_perc are measured on very different scales. Plotting them on the same axis can be misleading and makes it difficult to compare trends accurately. A better approach would be to use separate plots or normalize the values.
